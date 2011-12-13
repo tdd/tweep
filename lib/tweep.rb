@@ -7,8 +7,6 @@
 #
 # (c) 2011 Christophe Porteneuve
 
-$LOAD_PATH.unshift File.dirname(__FILE__)
-
 require 'tweep/account'
 require 'tweep/index'
 require 'tweep/logging'
@@ -27,5 +25,3 @@ module Tweep
     Account.new(defn, @@index)
   end
 end
-
-Tweep.run! if __FILE__ == $0

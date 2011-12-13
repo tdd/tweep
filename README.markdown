@@ -96,6 +96,10 @@ the directory it’s running at.
 
 You should then take steps to run the `tweep` command in the proper directory at regular intervals, frequently enough to honor your `schedule` settings.  Linux and OSX have Crontab for this, and Windows has Scheduled Tasks.
 
+## Logging
+
+By default, the `tweep` executable logs its activity (tweets and retweets) to the standard output.  You can redirect this manually to a file, forsake it to `/dev/null`, or ask it to log automatically to a `tweep.log` file in the current directory by using the `--log` command-line option.
+
 # Contributing
 
 Tweep intends to serve a rather simple need: doing basic Twitter campaigns and making sure
@@ -112,6 +116,10 @@ Still, if you discover a bug, or feel you can improve the user experience in a w
 consistent with the initial design goals of Tweep, just fork the project on
 [Github](https://github.com/tdd/tweep), patch it, test it, and submit a pull request.
 I'll be happy to check these out and merge them in if I like them!
+
+## Tests
+
+I haven't written tests for this yet.  I sure intend to.  So stick around!  And of course, contributing tests is most welcome.  In order to reduce dependencies to a minimum, I will go with Test::Unit instead of fancier stuff like RSpec or Steak.
 
 # License
 
