@@ -1,0 +1,31 @@
+# Auth -- this is the only required part
+consumer_key: ""
+consumer_secret: ""
+oauth_token: ""
+oauth_token_secret: ""
+
+# Schedule -- when to chomp through the tweets.txt file in the
+# same directory, tweet the top of the list, rotate and update
+# the file.  Optional if this is just a retweeter account.
+schedule:
+  monday: 1pm
+  thursday: 1pm
+  2011-12-25: 12am,12pm
+
+tweets:
+  - "Blah blah blah o'blah"
+  - "Bleh bleh bleh bleh bleh"
+  - "Blih blah o'blah blouh\" bleh bleh"
+
+# Retweets -- who retweets our tweets?  You can either provide
+# a single name as 'retweeter' or use the YAML array syntax inside
+# a "retweeters" key.  Tweep uses both if you do, "retweeter" being
+# considered set to 'always'.
+#
+# Optional if this is just a retweeter account, that doesn't tweet on
+# its own.
+retweeter: porteneuve
+
+retweeters:
+  porteneuve: always # Retweet every tweet.
+  rails: every 3 tweets
