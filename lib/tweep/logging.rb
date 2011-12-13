@@ -20,7 +20,7 @@ module Tweep
   
   def self.logger
     return @logger if @logger
-    @logger = ARGV.include?('--stdout') ?
+    @logger = ARGV.include?('--stdout') || ENV['DEBUG'] ?
       Logger.new(STDOUT) :
       Logger.new('tweep.log', 5, 1_024 ** 2)
     @logger.formatter = proc { |sev, datetime, progname, msg|

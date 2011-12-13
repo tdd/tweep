@@ -1,9 +1,5 @@
 #! /usr/bin/env ruby
 # encoding: utf-8
-
-# Tweep - Automatic Twitter Peeping
-# Lets me rotate through tweets in a scheduled manner,
-# with multiple accounts, and auto-retweet such tweets on other accounts yet.
 #
 # (c) 2011 Christophe Porteneuve
 
@@ -11,12 +7,13 @@ require 'tweep/core_exts'
 
 module Tweep
   class Config
-    attr_reader :auth, :nick, :schedule, :tweets
+    attr_reader :auth, :nick, :schedule, :retweeters, :tweets
     
-    def initialize(file)
+    def initialize(file, index)
       config = YAML::load(File.read(file))
-    
+
       @nick = File.basename(file, '.*')
+      @index = index
       
       load_auth config
       load_schedule config
@@ -33,9 +30,27 @@ module Tweep
       @tweets.any?
     end
 
+    def next_tweet
+      idx = @index.next_tweet_index(@nick)
+      idx = 0 if idx.to_i >= @tweets.size
+      [@tweets[idx], idx]
+    end
+
     def now_is_a_good_time?
       now = Time.now
-      (@schedule[now.wday] || []).include?(now.strftime('%H:%M'))
+      (0..@allowed_delay.to_i).any? do |offset|
+        time = now - offset * 60
+        (@schedule[time.wday] || []).include?(time.strftime('%H:%M'))
+      end
+    end
+  
+    def should_get_retweeted_by?(retweeter)
+      if (result = @index.retweet_timely?(@nick, retweeter))
+        @index.next_retweet_in! @nick, retweeter, @retweeters[retweeter]
+      else
+        @index.retweet_will_wait! @nick, retweeter
+      end
+      result
     end
   
   private
@@ -59,9 +74,15 @@ module Tweep
     def load_retweeters(config)
       @retweeters = {}
       if (shortcut = config['retweeter'])
-        @retweeters[shortcut.to_s] = :always
+        @retweeters[shortcut.to_s] = 0
       end
-      @retweeters.update(config['retweeters'] || {})
+      (config['retweeters'] || {}).each do |nick, pattern|
+        wait = 0
+        if pattern[/^\s*every\s+(\d+|other)(?:\s+tweets?)\s*$/i]
+          wait = 'other' == $1 ? 1 : [$1.to_i - 1, 0].max
+        end
+        @retweeters[nick] = wait
+      end
     end
 
     def load_schedule(config)
@@ -70,7 +91,9 @@ module Tweep
         if !key && dow.to_s[/^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/]
           key = Date.civil($1.to_i, $2.to_i, $3.to_i) rescue nil
         end
-        if key
+        if !key && 'allowed_delay' == dow
+          @allowed_delay = hours.to_i
+        elsif key
           hours = hours.split(',').map(&:strip).reject(&:empty?)
           hours = hours.map { |hour| self.class.read_hour(hour) }.compact
           acc[key] = hours if hours

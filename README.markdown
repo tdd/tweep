@@ -1,8 +1,4 @@
-Tweep - Automatic Twitter Peeping
-
-Lets you rotate through tweets in a scheduled manner, with multiple accounts, and auto-retweet such tweets on other accounts yet.
-
-Intended for scheduled binary call at a small enough granularity, usually through a cronjob.
+Tweep - Automatic Twitter Peeping.  Lets you rotate through tweets in a scheduled manner, with multiple accounts, and auto-retweet such tweets on other accounts yet.  For instance, think recent accounts for product launches versus their more established company accounts.
 
 # Installing
 
@@ -25,18 +21,19 @@ Tweep is no central application that could prompt Twitter to authorize it, other
 You will need to create a custom app on your account for Tweep to use on your behalf. Here’s how:
 
 1. Sign in to [Twitter Developers](http://dev.twitter.com) using your regular Twitter account. This should get you to the "My Applications" screen.
-2. Click the "Create a new application" button
-3. Give it a name (say, "My Tweep"), description (anything) and website (your own perhaps).
-4. If you're brave and have some spare time, read the terms of use, cheekily renamed "Developer Rules of the Road."  Then check the "Yes, I agree" box.
-5. Type the CAPTCHA.  If it's unreadable, use the circular arrow icon on the right-hand side until you can manage it.
-6. Finally, click the "Create your Twitter application" button.
+2. Click the "Create an app" link
+3. Give it a name (say, "Tweep").  This is the name that will show up as "the source" (the app you use to tweet) in your Tweep-sent tweets.
+4. description (anything) and website (your own perhaps).
+5. If you're brave and have some spare time, read the terms of use, cheekily renamed "Developer Rules of the Road."  Then check the "Yes, I agree" box.
+6. Type the CAPTCHA.  If it's unreadable, use the circular arrow icon on the right-hand side until you can manage it.
+7. Finally, click the "Create your Twitter application" button.
 
 OK, almost there.  Your app starts out as read-only: it won't let you *send tweets* to Twitter.  You're now on the app's screen.
 
-7. Click the Settings tab
-8. In Application Type, choose Read and Write
-9. At the bottom of the form, click "Update this Twitter application’s settings"
-10. Get back to the Details tab, and at the bottom, click "Create my access token"
+8. Click the Settings tab
+9. In Application Type, choose Read and Write
+10. At the bottom of the form, click "Update this Twitter application’s settings"
+11. Get back to the Details tab, and at the bottom, click "Create my access token"
 
 Yay, you’re done!  Click the OAuth tool tab and you’ll see the 4 pieces of authentication configuration you’ll need to put in your account’s YAML file.  Use the `your_account_1.yml` file as a template and copy-paste the 4 values in the proper places.  Make sure you keep the values wrapped in the quotes originally placed in the YAML file.
 
@@ -57,6 +54,8 @@ In 12-hour format, you can use 'am' or 'a', 'pm' or 'p' indifferently, using wha
 You can use multiple hours on the same day by separating hours with commas.
 
 If you want to schedule tweets on specific dates besides (or instead of) recurring weekdays, you can use specific dates as schedule keys, in the form `YYYY-MM-DD`, for instance `2011-12-25` for December 25, 2011.
+
+All this is nice and well, but the way you'll schedule the running of Tweep may end up launching it a few minutes late (perhaps because other, long tasks are run before it).  So you can allow a maximum delay for running Tweep, using the `allowed_delay` key in `schedule`, expressed in minutes.  For instance, setting `allowed_delay: 15` will let a task scheduled as `1p` be run until 01:15pm.
 
 # Controlling automatic retweets
 
