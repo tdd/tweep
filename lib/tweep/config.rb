@@ -106,9 +106,10 @@ module Tweep
     def self.read_hour(hour)
       return unless hour =~ TIME_REGEX
       h, m = if $1 && $2
+        mark = $2
         h, m = $1.split(':').map(&:to_i)
         h = 0 if 12 == h
-        h += 12 if 'P' == $2.upcase[0, 1]
+        h += 12 if 'P' == mark.upcase[0, 1]
         [h, m]
       else
         $3.split(':').map(&:to_i)
