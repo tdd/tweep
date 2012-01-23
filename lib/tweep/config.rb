@@ -40,7 +40,7 @@ module Tweep
       now = Time.now
       (0..@allowed_delay.to_i).any? do |offset|
         time = now - offset * 60
-        (@schedule[time.wday] || []).include?(time.strftime('%H:%M'))
+        (@schedule[time.wday] || @schedule[time.to_date] || []).include?(time.strftime('%H:%M'))
       end
     end
   
