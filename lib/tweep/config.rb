@@ -37,6 +37,7 @@ module Tweep
     end
 
     def now_is_a_good_time?
+      return false if @max_date && @max_date.before?(Date.today)
       now = Time.now
       (0..@allowed_delay.to_i).any? do |offset|
         time = now - offset * 60
@@ -93,6 +94,8 @@ module Tweep
         end
         if !key && 'allowed_delay' == dow
           @allowed_delay = hours.to_i
+  	elsif !key && 'max_date' == dow
+	  @max_date = Date.parse(dow) rescue nil
         elsif key
           hours = hours.split(',').map(&:strip).reject(&:empty?)
           hours = hours.map { |hour| self.class.read_hour(hour) }.compact
