@@ -3,6 +3,7 @@
 #
 # (c) 2011 Christophe Porteneuve
 
+require 'time'
 require 'tweep/core_exts'
 
 module Tweep
@@ -38,7 +39,8 @@ module Tweep
 
     def now_is_a_good_time?
       return false if @max_date && @max_date.before?(Date.today)
-      now = Time.now
+      spec = ARGV.join ' '
+      now = spec =~ TIME_SPEC ? Time.parse(spec) : Time.now
       (0..@allowed_delay.to_i).any? do |offset|
         time = now - offset * 60
         (@schedule[time.wday] || @schedule[time.to_date] || []).include?(time.strftime('%H:%M'))
@@ -64,9 +66,19 @@ module Tweep
       ([ap]m?)
       |
       # 24-hour format - group 3
-      ((?:[01]?[0-9]|2[0-3])(?:[0-5][0-9]?))
+      ((?:[01]?[0-9]|2[0-3])(?::[0-5][0-9]?))
       )
     )ix
+    
+    TIME_SPEC = %r(
+      ^
+      # Day
+      20\d{2}-\d{2}-\d{2}
+      \s+
+      # 24-hour format
+      (?:[01]?[0-9]|2[0-3])(?::[0-5][0-9])?
+      $
+    )x
     
     def load_auth(config)
       @auth = config.slice('consumer_key', 'consumer_secret', 'oauth_token', 'oauth_token_secret')
@@ -94,8 +106,8 @@ module Tweep
         end
         if !key && 'allowed_delay' == dow
           @allowed_delay = hours.to_i
-  	elsif !key && 'max_date' == dow
-	  @max_date = Date.parse(dow) rescue nil
+        elsif !key && 'max_date' == dow
+          @max_date = Date.parse(dow) rescue nil
         elsif key
           hours = hours.split(',').map(&:strip).reject(&:empty?)
           hours = hours.map { |hour| self.class.read_hour(hour) }.compact
